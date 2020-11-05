@@ -113,12 +113,17 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.385
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
-      ### test
-      ret.lateralTuning.pid.kf = 0.00005
-      ret.steerRatio = 16.55  # 13.8 is spec end-to-end
-      tire_stiffness_factor = 0.82
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2, 0.35], [0.05, 0.09]]      
+      ### PID from XPS fork - smooth steering
+      ret.steerRateCost = 0.5
+      ret.steerLimitTimer = 0.1
+      tire_stiffness_factor = 0.7
+      ret.lateralTuning.pid.kpBP = [0., 10., 30.]
+      ret.lateralTuning.pid.kpV = [0.01, 0.02, 0.03]
+      ret.lateralTuning.pid.kiBP = [0., 10., 30.]
+      ret.lateralTuning.pid.kiV = [0.001, 0.0015, 0.002]
+      ret.lateralTuning.pid.kfBP = [0., 10., 30.]
+      ret.lateralTuning.pid.kfV = [0.000015, 0.00002, 0.000025]
+      ###
     elif candidate in [CAR.KIA_OPTIMA, CAR.KIA_OPTIMA_H]:
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 3558. * CV.LB_TO_KG
