@@ -1,3 +1,13 @@
+Kia e-NIRO 2020 for EU roads (Slovakia)
+=======================
+* Lane width from US 3.7m -> 3.0m, speed_lane_with from [0., 31.], [2.8, 3.5] to [0., 31.], [2.8, 2.9] [Issue](https://github.com/commaai/openpilot/issues/2446)
+* [Allow rlog/fcamera upload for LTE SIM only](https://github.com/commaai/openpilot/issues/2445)
+* [Allow gas press via unsafe mode](https://github.com/commaai/openpilot/discussions/2401#discussioncomment-123563)
+
+=======================
+=======================
+
+
 [![](https://i.imgur.com/UelUjKAh.png)](#)
 
 Table of Contents
