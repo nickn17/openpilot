@@ -19,7 +19,7 @@ class CarInterfaceBase():
   def __init__(self, CP, CarController, CarState):
     self.CP = CP
     self.VM = VehicleModel(CP)
-    self.disengage_on_gas = false
+    self.disengage_on_gas = False
 
     self.frame = 0
     self.low_speed_alert = False
