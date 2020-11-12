@@ -30,8 +30,6 @@ class LanePlanner:
 
     self.lane_width_estimate = 3.7
     self.lane_width_certainty = 1.0
-#    self.lane_width = 3.7
-# EU 3m lane width
     self.lane_width = 3.0
 
     self.l_prob = 0.
@@ -92,8 +90,6 @@ class LanePlanner:
     self.lane_width_certainty += 0.05 * (l_prob * r_prob - self.lane_width_certainty)
     current_lane_width = abs(self.l_poly[3] - self.r_poly[3])
     self.lane_width_estimate += 0.005 * (current_lane_width - self.lane_width_estimate)
-#    speed_lane_width = interp(v_ego, [0., 31.], [2.8, 3.5])
-# EU secondary/tertiary roads with middle line only. Car was going on the road edge 
     speed_lane_width = interp(v_ego, [0., 31.], [2.8, 2.9])
     self.lane_width = self.lane_width_certainty * self.lane_width_estimate + \
                       (1 - self.lane_width_certainty) * speed_lane_width
