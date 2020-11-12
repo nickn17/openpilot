@@ -107,7 +107,6 @@ void safety_setter_thread() {
   cereal::CarParams::Reader car_params = cmsg.getRoot<cereal::CarParams>();
   cereal::CarParams::SafetyModel safety_model = car_params.getSafetyModel();
 
-  // Unsafe mode - allow gas press (define UNSAFE_DISABLE_DISENGAGE_ON_GAS 1)
   panda->set_unsafe_mode(1);  // see safety_declarations.h for allowed values
 
   auto safety_param = car_params.getSafetyParam();
