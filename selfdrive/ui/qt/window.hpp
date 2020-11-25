@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <QWidget>
 #include <QTimer>
 #include <QOpenGLWidget>
@@ -8,27 +10,8 @@
 
 #include "qt/qt_sound.hpp"
 #include "ui/ui.hpp"
-
-class MainWindow : public QWidget {
-  Q_OBJECT
-
-public:
-  explicit MainWindow(QWidget *parent = 0);
-
-private:
-  QStackedLayout *main_layout;
-
-public slots:
-  void openSettings();
-  void closeSettings();
-};
-
-#ifdef QCOM2
-const int vwp_w = 2160;
-#else
-const int vwp_w = 1920;
-#endif
-const int vwp_h = 1080;
+#include "offroad/settings.hpp"
+#include "offroad/onboarding.hpp"
 
 class GLWindow : public QOpenGLWidget, protected QOpenGLFunctions {
   Q_OBJECT
@@ -36,6 +19,7 @@ class GLWindow : public QOpenGLWidget, protected QOpenGLFunctions {
 public:
   using QOpenGLWidget::QOpenGLWidget;
   explicit GLWindow(QWidget *parent = 0);
+  void wake();
   ~GLWindow();
 
 protected:
@@ -48,7 +32,7 @@ private:
   QTimer * timer;
   QTimer * backlight_timer;
 
-  UIState * ui_state;
+  UIState * ui_state = nullptr;
   QtSound sound;
 
   bool onroad = true;
@@ -64,4 +48,24 @@ public slots:
 
 signals:
   void openSettings();
+};
+
+class MainWindow : public QWidget {
+  Q_OBJECT
+
+protected:
+  bool eventFilter(QObject *obj, QEvent *event) override;
+
+public:
+  explicit MainWindow(QWidget *parent = 0);
+
+private:
+  QStackedLayout *main_layout;
+  GLWindow *glWindow;
+  SettingsWindow *settingsWindow;
+  OnboardingWindow *onboardingWindow;
+
+public slots:
+  void openSettings();
+  void closeSettings();
 };

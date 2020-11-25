@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <curl/curl.h>
 
 #include <QString>
@@ -10,21 +11,16 @@
 #include <QApplication>
 
 #include "setup.hpp"
-
-#ifdef QCOM2
-#include <qpa/qplatformnativeinterface.h>
-#include <QPlatformSurfaceEvent>
-#include <wayland-client-protocol.h>
-#endif
-
+#include "qt_window.hpp"
 
 int download(std::string url) {
   CURL *curl;
   curl = curl_easy_init();
   if (!curl) return -1;
 
-  FILE *fp;
-  fp = fopen("/tmp/installer", "wb");
+  char tmpfile[] = "/tmp/installer_XXXXXX";
+  FILE *fp = fdopen(mkstemp(tmpfile), "w");
+
   curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
@@ -32,6 +28,8 @@ int download(std::string url) {
   curl_easy_perform(curl);
   curl_easy_cleanup(curl);
   fclose(fp);
+
+  rename(tmpfile, "/tmp/installer");
   return 0;
 }
 
@@ -163,25 +161,8 @@ Setup::Setup(QWidget *parent) {
 }
 
 int main(int argc, char *argv[]) {
-#ifdef QCOM2
-  int w = 2160, h = 1080;
-#else
-  int w = 1920, h = 1080;
-#endif
-
   QApplication a(argc, argv);
-
   Setup setup;
-  setup.setFixedSize(w, h);
-  setup.show();
-
-#ifdef QCOM2
-  QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
-  wl_surface *s = reinterpret_cast<wl_surface*>(native->nativeResourceForWindow("surface", setup.windowHandle()));
-  wl_surface_set_buffer_transform(s, WL_OUTPUT_TRANSFORM_270);
-  wl_surface_commit(s);
-  setup.showFullScreen();
-#endif
-
+  setMainWindow(&setup);
   return a.exec();
 }
