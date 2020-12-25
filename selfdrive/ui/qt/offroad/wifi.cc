@@ -24,6 +24,12 @@ WifiUI::WifiUI(QWidget *parent, int page_length) : QWidget(parent), networks_per
   try {
     wifi = new WifiManager;
   } catch (std::exception &e) {
+    QLabel* warning = new QLabel("Network manager is inactive!");
+    warning->setStyleSheet(R"(font-size: 65px;)");
+
+    QVBoxLayout* warning_layout = new QVBoxLayout;
+    warning_layout->addWidget(warning, 0, Qt::AlignCenter);
+    setLayout(warning_layout);
     return;
   }
 
@@ -37,6 +43,10 @@ WifiUI::WifiUI(QWidget *parent, int page_length) : QWidget(parent), networks_per
   wifi_widget = new QWidget;
   QVBoxLayout* networkLayout = new QVBoxLayout;
   QHBoxLayout *tethering_field = new QHBoxLayout;
+  tethering_field->addSpacing(50);
+
+  ipv4 = new QLabel("");
+  tethering_field->addWidget(ipv4);
   tethering_field->addWidget(new QLabel("Enable Tethering"));
 
   Toggle* toggle_switch = new Toggle(this);
@@ -51,7 +61,6 @@ WifiUI::WifiUI(QWidget *parent, int page_length) : QWidget(parent), networks_per
   tetheringWidget->setLayout(tethering_field);
   tetheringWidget->setFixedHeight(150);
   networkLayout->addWidget(tetheringWidget);
-
 
   vlayout = new QVBoxLayout;
   wifi_widget->setLayout(vlayout);
@@ -93,7 +102,7 @@ void WifiUI::refresh() {
 
   wifi->request_scan();
   wifi->refreshNetworks();
-
+  ipv4->setText(wifi->ipv4_address);
   clearLayout(vlayout);
 
   connectButtons = new QButtonGroup(this);
@@ -138,13 +147,11 @@ void WifiUI::refresh() {
         QPushButton {
           padding: 0;
           font-size: 50px;
+          border-radius: 10px;
           background-color: #114265;
         }
         QPushButton:disabled {
           background-color: #323C43;
-        }
-        * {
-          background-color: #114265;
         }
       )");
       countWidgets++;
@@ -182,9 +189,6 @@ void WifiUI::refresh() {
     }
     QPushButton:disabled {
       background-color: #323C43;
-    }
-    * {
-      background-color: #114265;
     }
   )");
   vlayout->addWidget(w);
