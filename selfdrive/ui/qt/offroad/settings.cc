@@ -64,7 +64,7 @@ QWidget * toggles_panel() {
   toggles_list->setSpacing(25);
 
   toggles_list->addWidget(new ParamsToggle("OpenpilotEnabledToggle",
-                                            "Enable Openpilot",
+                                            "Enable openpilot",
                                             "Use the openpilot system for adaptive cruise control and lane keep driver assistance. Your attention is required at all times to use this feature. Changing this setting takes effect when the car is powered off.",
                                             "../assets/offroad/icon_openpilot.png"
                                               ));
@@ -218,15 +218,15 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   // close button
   QPushButton *close_btn = new QPushButton("X");
   close_btn->setStyleSheet(R"(
-    font-size: 65px;
+    font-size: 90px;
     font-weight: bold;
     border 1px grey solid;
-    border-radius: 75px;
-    background-color: #393939;
+    border-radius: 100px;
+    background-color: #292929;
   )");
-  close_btn->setFixedSize(150, 150);
+  close_btn->setFixedSize(200, 200);
   sidebar_layout->addSpacing(45);
-  sidebar_layout->addWidget(close_btn, 0, Qt::AlignHCenter);
+  sidebar_layout->addWidget(close_btn, 0, Qt::AlignLeft);
   QObject::connect(close_btn, SIGNAL(released()), this, SIGNAL(closeSettings()));
 
   // setup panels
