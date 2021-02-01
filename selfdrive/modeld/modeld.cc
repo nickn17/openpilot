@@ -7,7 +7,7 @@
 #include "visionipc_client.h"
 #include "common/swaglog.h"
 #include "common/clutil.h"
-#include "common/utilpp.h"
+#include "common/util.h"
 
 #include "models/driving.h"
 #include "messaging.hpp"
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
   assert(err == 0);
 
   // messaging
-  PubMaster pm({"modelV2", "model", "cameraOdometry"});
+  PubMaster pm({"modelV2", "cameraOdometry"});
   SubMaster sm({"pathPlan", "frame"});
 
   // cl init
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
 
   while (!do_exit){
     if (!vipc_client.connect(false)){
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      util::sleep_for(100);
       continue;
     }
     break;

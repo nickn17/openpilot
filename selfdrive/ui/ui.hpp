@@ -13,6 +13,7 @@
 
 #include <atomic>
 #include <map>
+#include <memory>
 #include <string>
 #include <sstream>
 
@@ -23,6 +24,7 @@
 #include "common/framebuffer.h"
 #include "common/modeldata.h"
 #include "common/params.h"
+#include "common/glutil.h"
 #include "sound.hpp"
 #include "visionipc.h"
 #include "visionipc_client.h"
@@ -119,7 +121,6 @@ typedef struct UIScene {
   cereal::ControlsState::AlertSize alert_size;
 
   cereal::HealthData::HwType hwType;
-  int satelliteCount;
   NetStatus athenaStatus;
 
   cereal::ThermalData::Reader thermal;
@@ -134,31 +135,26 @@ typedef struct UIScene {
   track_vertices_data track_vertices;
   line_vertices_data lane_line_vertices[4];
   line_vertices_data road_edge_vertices[2];
+
+  // lead
+  vertex_data lead_vertices[2];
 } UIScene;
 
 typedef struct UIState {
   VisionIpcClient * vipc_client;
+  VisionIpcClient * vipc_client_front;
+  VisionIpcClient * vipc_client_rear;
   VisionBuf * last_frame;
 
   // framebuffer
-  FramebufferState *fb;
+  std::unique_ptr<FrameBuffer> fb;
   int fb_w, fb_h;
 
   // NVG
   NVGcontext *vg;
 
-  // fonts and images
-  int font_sans_regular;
-  int font_sans_semibold;
-  int font_sans_bold;
-  int img_wheel;
-  int img_turn;
-  int img_face;
-  int img_button_settings;
-  int img_button_home;
-  int img_battery;
-  int img_battery_charging;
-  int img_network[6];
+  // images
+  std::map<std::string, int> images;
 
   SubMaster *sm;
 
@@ -168,13 +164,9 @@ typedef struct UIState {
   cereal::UiLayoutState::App active_app;
 
   // graphics
-  GLuint frame_program;
-  GLuint frame_texs[UI_BUF_COUNT];
-  EGLImageKHR khr[UI_BUF_COUNT];
-  void *priv_hnds[UI_BUF_COUNT];
+  std::unique_ptr<GLShader> gl_shader;
+  std::unique_ptr<EGLImageTexture> texture[UI_BUF_COUNT];
 
-  GLint frame_pos_loc, frame_texcoord_loc;
-  GLint frame_texture_loc, frame_transform_loc;
   GLuint frame_vao[2], frame_vbo[2], frame_ibo[2];
   mat4 rear_frame_mat, front_frame_mat;
 
@@ -189,6 +181,7 @@ typedef struct UIState {
   uint64_t started_frame;
 
   Rect video_rect;
+  float car_space_transform[6];
 } UIState;
 
 void ui_init(UIState *s);

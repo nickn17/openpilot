@@ -6,7 +6,7 @@
 
 #include "common/swaglog.h"
 #include "common/gpio.h"
-#include "common/utilpp.h"
+#include "common/util.h"
 
 #include "pigeon.h"
 
@@ -89,7 +89,7 @@ void PandaPigeon::set_baud(int baud) {
   panda->usb_write(0xe4, 1, baud/300);
 }
 
-void PandaPigeon::send(std::string s) {
+void PandaPigeon::send(const std::string &s) {
   int len = s.length();
   const char * dat = s.data();
 
@@ -105,11 +105,11 @@ void PandaPigeon::send(std::string s) {
 
 std::string PandaPigeon::receive() {
   std::string r;
-
-  while (true){
-    unsigned char dat[0x40];
+  r.reserve(0x1000 + 0x40);
+  unsigned char dat[0x40];
+  while (r.length() < 0x1000){
     int len = panda->usb_read(0xe0, 1, 0, dat, sizeof(dat));
-    if (len <= 0 || r.length() > 0x1000) break;
+    if (len <= 0) break;
     r.append((char*)dat, len);
   }
 
@@ -180,11 +180,9 @@ void TTYPigeon::set_baud(int baud){
   assert(tcflush(pigeon_tty_fd, TCIOFLUSH) == 0);
 }
 
-void TTYPigeon::send(std::string s) {
-  int len = s.length();
-  const char * dat = s.data();
+void TTYPigeon::send(const std::string &s) {
+  int err = write(pigeon_tty_fd, s.data(), s.length());
 
-  int err = write(pigeon_tty_fd, dat, len);
   if(err < 0) { handle_tty_issue(err, __func__); }
   err = tcdrain(pigeon_tty_fd);
   if(err < 0) { handle_tty_issue(err, __func__); }
@@ -192,13 +190,13 @@ void TTYPigeon::send(std::string s) {
 
 std::string TTYPigeon::receive() {
   std::string r;
-
-  while (true){
-    char dat[0x40];
+  r.reserve(0x1000 + 0x40);
+  char dat[0x40];
+  while (r.length() < 0x1000){
     int len = read(pigeon_tty_fd, dat, sizeof(dat));
     if(len < 0) {
       handle_tty_issue(len, __func__);
-    } else if (len == 0 || r.length() > 0x1000){
+    } else if (len == 0){
       break;
     } else {
       r.append(dat, len);

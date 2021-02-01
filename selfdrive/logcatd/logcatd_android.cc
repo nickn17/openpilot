@@ -10,7 +10,7 @@
 #include <log/logprint.h>
 
 #include "common/timing.h"
-#include "common/utilpp.h"
+#include "common/util.h"
 #include "messaging.hpp"
 
 
@@ -63,7 +63,6 @@ int main() {
     pm.send("androidLog", msg);
   }
 
-  android_logger_list_close(logger_list);
   android_logger_list_free(logger_list);
   return 0;
 }
