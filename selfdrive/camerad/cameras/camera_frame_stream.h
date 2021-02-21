@@ -15,6 +15,7 @@
 
 typedef struct CameraState {
   int camera_id;
+  int camera_num;
   CameraInfo ci;
 
   int fps;
@@ -27,8 +28,8 @@ typedef struct CameraState {
 typedef struct MultiCameraState {
   int ispif_fd;
 
-  CameraState rear;
-  CameraState front;
+  CameraState road_cam;
+  CameraState driver_cam;
 
   SubMaster *sm;
   PubMaster *pm;

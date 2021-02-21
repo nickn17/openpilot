@@ -91,8 +91,6 @@ typedef struct CameraState {
 
   StreamState ss[3];
 
-  uint64_t last_t;
-
   camera_apply_exposure_func apply_exposure;
 
   int16_t focus[NUM_FOCUS];
@@ -129,10 +127,10 @@ typedef struct MultiCameraState {
   cl_program prg_rgb_laplacian;
   cl_kernel krnl_rgb_laplacian;
 
-  CameraState rear;
-  CameraState front;
+  CameraState road_cam;
+  CameraState driver_cam;
 
-  SubMaster *sm_front;
+  SubMaster *sm;
   PubMaster *pm;
 
 } MultiCameraState;

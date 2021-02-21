@@ -139,7 +139,8 @@ pipeline {
                 stage('Replay Tests') {
                   steps {
                     phone_steps("eon2", [
-                      ["camerad/modeld replay", "SCONS_CACHE=1 QCOM_REPLAY=1 scons -j4 && cd selfdrive/test/process_replay && ./camera_replay.py"],
+                      ["build QCOM_REPLAY", "SCONS_CACHE=1 QCOM_REPLAY=1 scons -j4"],
+                      ["camerad/modeld replay", "cd selfdrive/test/process_replay && ./camera_replay.py"],
                     ])
                   }
                 }
@@ -153,6 +154,7 @@ pipeline {
                       ["test loggerd", "python selfdrive/loggerd/tests/test_loggerd.py"],
                       ["test encoder", "python selfdrive/loggerd/tests/test_encoder.py"],
                       ["test camerad", "python selfdrive/camerad/test/test_camerad.py"],
+                      ["test logcatd", "python selfdrive/logcatd/tests/test_logcatd_android.py"],
                       //["test updater", "python installer/updater/test_updater.py"],
                     ])
                   }
@@ -166,9 +168,9 @@ pipeline {
                     phone_steps("tici", [
                       ["build", "SCONS_CACHE=1 scons -j16"],
                       ["test loggerd", "python selfdrive/loggerd/tests/test_loggerd.py"],
-                      ["test encoder", "python selfdrive/loggerd/tests/test_encoder.py"],
+                      ["test encoder", "LD_LIBRARY_PATH=/usr/local/lib python selfdrive/loggerd/tests/test_encoder.py"],
                       ["test camerad", "python selfdrive/camerad/test/test_camerad.py"],
-                      ["build release3-staging", "cd release && PUSH=${env.R3_PUSH} ./build_release3.sh"],
+                      //["build release3-staging", "cd release && PUSH=${env.R3_PUSH} ./build_release3.sh"],
                     ])
                   }
                 }

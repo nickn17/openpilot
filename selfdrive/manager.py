@@ -19,7 +19,7 @@ from common.basedir import BASEDIR
 from common.spinner import Spinner
 from common.text_window import TextWindow
 import selfdrive.crash as crash
-from selfdrive.hardware import HARDWARE, EON, PC
+from selfdrive.hardware import HARDWARE, EON, PC, TICI
 from selfdrive.hardware.eon.apk import update_apks, pm_apply_packages, start_offroad
 from selfdrive.swaglog import cloudlog, add_logentries_handler
 from selfdrive.version import version, dirty
@@ -27,7 +27,7 @@ from selfdrive.version import version, dirty
 os.environ['BASEDIR'] = BASEDIR
 sys.path.append(os.path.join(BASEDIR, "pyextra"))
 
-TOTAL_SCONS_NODES = 1040
+TOTAL_SCONS_NODES = 1225
 MAX_BUILD_PROGRESS = 70
 WEBCAM = os.getenv("WEBCAM") is not None
 PREBUILT = os.path.exists(os.path.join(BASEDIR, 'prebuilt'))
@@ -173,7 +173,6 @@ managed_processes = {
   "camerad": ("selfdrive/camerad", ["./camerad"]),
   "sensord": ("selfdrive/sensord", ["./sensord"]),
   "clocksd": ("selfdrive/clocksd", ["./clocksd"]),
-  "gpsd": ("selfdrive/sensord", ["./gpsd"]),
   "updated": "selfdrive.updated",
   "dmonitoringmodeld": ("selfdrive/modeld", ["./dmonitoringmodeld"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
@@ -218,6 +217,10 @@ if EON:
     'sensord',
   ]
 
+if TICI:
+  managed_processes["timezoned"] = "selfdrive.timezoned"
+  persistent_processes += ['timezoned']
+
 car_started_processes = [
   'controlsd',
   'plannerd',
@@ -248,7 +251,6 @@ if not PC or WEBCAM:
 
 if EON:
   car_started_processes += [
-    'gpsd',
     'rtshield',
   ]
 else:
@@ -268,10 +270,6 @@ def register_managed_process(name, desc, car_started=False):
 def nativelauncher(pargs, cwd):
   # exec the process
   os.chdir(cwd)
-
-  # because when extracted from pex zips permissions get lost -_-
-  os.chmod(pargs[0], 0o700)
-
   os.execvp(pargs[0], pargs)
 
 def start_managed_process(name):
@@ -461,16 +459,16 @@ def manager_thread():
   started_prev = False
   logger_dead = False
   params = Params()
-  thermal_sock = messaging.sub_sock('thermal')
+  device_state_sock = messaging.sub_sock('deviceState')
   pm = messaging.PubMaster(['managerState'])
 
   while 1:
-    msg = messaging.recv_sock(thermal_sock, wait=True)
+    msg = messaging.recv_sock(device_state_sock, wait=True)
 
-    if msg.thermal.freeSpace < 0.05:
+    if msg.deviceState.freeSpacePercent < 5:
       logger_dead = True
 
-    if msg.thermal.started:
+    if msg.deviceState.started:
       for p in car_started_processes:
         if p == "loggerd" and logger_dead:
           kill_managed_process(p)
@@ -496,7 +494,7 @@ def manager_thread():
         os.sync()
         send_managed_process_signal("updated", signal.SIGHUP)
 
-    started_prev = msg.thermal.started
+    started_prev = msg.deviceState.started
 
     # check the status of all processes, did any of them die?
     running_list = ["%s%s\u001b[0m" % ("\u001b[32m" if running[p].is_alive() else "\u001b[31m", p) for p in running]

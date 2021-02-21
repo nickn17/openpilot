@@ -14,6 +14,7 @@
 
 typedef struct CameraState {
   CameraInfo ci;
+  int camera_num;
   int fps;
   float digital_gain;
   CameraBuf buf;
@@ -21,8 +22,8 @@ typedef struct CameraState {
 
 
 typedef struct MultiCameraState {
-  CameraState rear;
-  CameraState front;
+  CameraState road_cam;
+  CameraState driver_cam;
 
   SubMaster *sm;
   PubMaster *pm;

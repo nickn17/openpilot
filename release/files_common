@@ -225,10 +225,10 @@ selfdrive/controls/lib/latcontrol_pid.py
 selfdrive/controls/lib/latcontrol_indi.py
 selfdrive/controls/lib/latcontrol_lqr.py
 selfdrive/controls/lib/longcontrol.py
-selfdrive/controls/lib/pathplanner.py
+selfdrive/controls/lib/lateral_planner.py
 selfdrive/controls/lib/lane_planner.py
 selfdrive/controls/lib/pid.py
-selfdrive/controls/lib/planner.py
+selfdrive/controls/lib/longitudinal_planner.py
 selfdrive/controls/lib/radar_helpers.py
 selfdrive/controls/lib/vehicle_model.py
 selfdrive/controls/lib/speed_smoother.py
@@ -319,14 +319,12 @@ selfdrive/loggerd/deleter.py
 selfdrive/loggerd/xattr_cache.py
 
 selfdrive/sensord/SConscript
-selfdrive/sensord/gpsd.cc
 selfdrive/sensord/libdiag.h
 selfdrive/sensord/sensors_qcom.cc
 selfdrive/sensord/sensors_qcom2.cc
 selfdrive/sensord/sensors/*.cc
 selfdrive/sensord/sensors/*.hpp
 selfdrive/sensord/sensord
-selfdrive/sensord/gpsd
 
 selfdrive/thermald/thermald.py
 selfdrive/thermald/power_monitoring.py
@@ -475,9 +473,9 @@ rednose/**
 cereal/.gitignore
 cereal/__init__.py
 cereal/car.capnp
+cereal/legacy.capnp
 cereal/log.capnp
 cereal/services.py
-cereal/service_list.yaml
 cereal/SConscript
 cereal/include/**
 cereal/messaging/.gitignore
@@ -494,8 +492,12 @@ cereal/messaging/messaging_pyx.pyx
 cereal/messaging/msgq.cc
 cereal/messaging/msgq.hpp
 cereal/messaging/socketmaster.cc
+cereal/visionipc/.gitignore
+cereal/visionipc/__init__.py
 cereal/visionipc/*.cc
 cereal/visionipc/*.h
+cereal/visionipc/*.pyx
+cereal/visionipc/*.pxd
 
 panda/.gitignore
 panda/__init__.py
